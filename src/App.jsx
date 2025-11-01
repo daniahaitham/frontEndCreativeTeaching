@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Signup from "./pages/SignUp";
 import ThreeStrategiesMainPage  from "./pages/ThreeStrategiesMainPage";
 import Forum from "./pages/Forum";
 import StrategyPage from "./pages/StrategyPage";
