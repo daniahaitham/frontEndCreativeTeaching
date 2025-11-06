@@ -1,4 +1,15 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/login", "destination": "/#/login" },
+    { "source": "/signup", "destination": "/#/signup" },
+    { "source": "/strategies", "destination": "/#/strategies" },
+    { "source": "/forum", "destination": "/#/forum" },
+    { "source": "/feedback", "destination": "/#/feedback" },
+    { "source": "/strategy/:id", "destination": "/#/strategy/:id" },
+    { "source": "/articles/:strategyId", "destination": "/#/articles/:strategyId" }
+  ],
   "routes": [
     { "src": "/(.*)", "dest": "/index.html" }
   ]
