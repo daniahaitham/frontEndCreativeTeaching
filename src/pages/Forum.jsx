@@ -3,6 +3,7 @@ import "../App.css";
 import { useLocation } from "react-router-dom";
 
 export default function Forum() {
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const strategyId = params.get("strategy");
@@ -12,7 +13,7 @@ export default function Forum() {
 
   // ✅ Load all questions from backend
   useEffect(() => {
-      fetch(`${import.meta.env.VITE_API_URL}/api/forum`)
+      fetch(`${API_BASE}/api/forum`)
       .then((res) => res.json())
       .then((data) => setQuestions(data))
       .catch((err) => console.error("❌ Error loading questions:", err));
@@ -32,7 +33,7 @@ export default function Forum() {
 const storedUser = JSON.parse(localStorage.getItem("user"));
 const username = storedUser?.name || "مستخدم مجهول";
 
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/forum/${qid}/answers`, {
+  const res = await fetch(`${API_BASE}/api/forum/${qid}/answers`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, content }),

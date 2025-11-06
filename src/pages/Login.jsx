@@ -2,6 +2,8 @@ import { useState } from "react";
 import "../App.css";
 
 export default function Login() {
+    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -11,7 +13,7 @@ export default function Login() {
     setMessage("");
 
     try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/login`, {
+        const res = await fetch(`${API_BASE}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

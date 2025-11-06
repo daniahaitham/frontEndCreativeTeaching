@@ -13,7 +13,7 @@ export default function Navbar() {
     <>
        <nav className="navbar">
       {/* Back Button */}
-      <button onClick={() => navigate(-1)}>
+      <button id="back" onClick={() => navigate(-1)}>
         <img src={backIcon} alt="رجوع" />
       </button>
 

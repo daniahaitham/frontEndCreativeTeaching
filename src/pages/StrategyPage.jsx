@@ -6,6 +6,21 @@ export default function StrategyPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // 👇 Get the logged-in user
+  // 👇 Get the logged-in user (robust version)
+let storedUser = null;
+try {
+  storedUser = JSON.parse(localStorage.getItem("user"));
+} catch (e) {
+  console.warn("Invalid user in localStorage", e);
+}
+
+const userId =
+  storedUser && typeof storedUser === "object"
+    ? storedUser._id || storedUser.email || "guest"
+    : "guest";
+
+
   const [strategy, setStrategy] = useState(null);
   const [currentUnit, setCurrentUnit] = useState(-1);
   const [completedUnits, setCompletedUnits] = useState([]);
@@ -13,41 +28,42 @@ export default function StrategyPage() {
   const [examSubmitted, setExamSubmitted] = useState(false);
   const [preExamSubmitted, setPreExamSubmitted] = useState(false);
   const [postExamSubmitted, setPostExamSubmitted] = useState(false);
-
+ 
   // ---- Load saved progress ----
   useEffect(() => {
-    const saved = localStorage.getItem(`strategy-progress-${id}`);
-    if (saved) {
-      try {
-        const { currentUnit, completedUnits } = JSON.parse(saved);
-        if (typeof currentUnit === "number" && currentUnit <= (strategy?.units?.length ?? 0)) {
-          setCurrentUnit(currentUnit);
-          setCompletedUnits(Array.isArray(completedUnits) ? completedUnits : []);
-        }
-      } catch (err) {
-        console.warn("⚠️ Invalid saved progress — clearing it.", err);
-        localStorage.removeItem(`strategy-progress-${id}`);
+  const saved = localStorage.getItem(`${userId}-strategy-progress-${id}`);
+  if (saved) {
+    try {
+      const { currentUnit, completedUnits } = JSON.parse(saved);
+      if (typeof currentUnit === "number" && currentUnit <= (strategy?.units?.length ?? 0)) {
+        setCurrentUnit(currentUnit);
+        setCompletedUnits(Array.isArray(completedUnits) ? completedUnits : []);
       }
+    } catch (err) {
+      console.warn("⚠️ Invalid saved progress — clearing it.", err);
+      localStorage.removeItem(`${userId}-strategy-progress-${id}`);
     }
-  }, [id, strategy]);
+  }
+}, [id, strategy, userId]);
 
   // ---- Fetch strategy data ----
-  useEffect(() => {
-    fetch("/data/strategies.json")
-      .then((r) => r.json())
-      .then((data) => {
-        const found = data.find((s) => String(s.id) === id);
-        setStrategy(found || null);
-      });
-  }, [id]);
+ useEffect(() => {
+  fetch("/data/strategies.json")
+    .then((r) => r.json())
+    .then((data) => {
+      const found = data.find((s) => String(s.id) === id);
+      setStrategy(found || null);
+    });
+}, [id]); // ✅ no change
+  
 
   // ---- Save progress ----
   useEffect(() => {
-    localStorage.setItem(
-      `strategy-progress-${id}`,
-      JSON.stringify({ currentUnit, completedUnits })
-    );
-  }, [id, currentUnit, completedUnits]);
+  localStorage.setItem(
+    `${userId}-strategy-progress-${id}`,  // 🟢 userId added here in the key
+    JSON.stringify({ currentUnit, completedUnits })
+  );
+}, [id, currentUnit, completedUnits, userId]); 
 
   // ---- If not loaded ----
   if (!strategy || !Array.isArray(strategy.units)) {
@@ -75,7 +91,7 @@ export default function StrategyPage() {
       if (examAnswers[i] === q.answer) score++;
     });
 
-    localStorage.setItem(`${type}Exam-${id}`, JSON.stringify({ answers: examAnswers, score }));
+localStorage.setItem(`${userId}-${type}Exam-${id}`, JSON.stringify({ answers: examAnswers, score }));
 
     if (type === "pre") {
       setPreExamSubmitted(true);
@@ -83,7 +99,7 @@ export default function StrategyPage() {
       setPostExamSubmitted(true);
 
       // 🔹 compare with pre-exam score
-      const preExamData = JSON.parse(localStorage.getItem(`preExam-${id}`));
+const preExamData = JSON.parse(localStorage.getItem(`${userId}-preExam-${id}`));
       const preScore = preExamData?.score || 0;
       const improvement = score - preScore;
 
@@ -106,6 +122,11 @@ export default function StrategyPage() {
 
     return (
       <div className="exam-section">
+        {type === "pre" && (
+          <p style={{ background: "#eef7ff", padding: "12px", borderRadius: "10px" }}>
+            يهدف هذا الاختبار إلى قياس مستوى معرفتك وفهمك لمبادئ وأدوات الاستراتيجية قبل وبعد البرنامج التدريبي.
+          </p>
+        )}
         <h3>{type === "pre" ? "الاختبار القبلي" : "الاختبار البعدي"}</h3>
 
         {exam.questions.map((q, qi) => (
@@ -114,11 +135,7 @@ export default function StrategyPage() {
               {toArabic(qi + 1)}. {q.q}
             </p>
             {q.options.map((opt, oi) => (
-              <label
-                key={oi}
-                className="block option-item"
-                style={{ marginBottom: "8px", display: "block" }}
-              >
+              <label key={oi} className="block option-item" style={{ marginBottom: "8px" }}>
                 <input
                   type="radio"
                   name={`q${qi}`}
@@ -131,14 +148,12 @@ export default function StrategyPage() {
           </div>
         ))}
 
-        {/* Submit button */}
         {!(type === "pre" ? preExamSubmitted : postExamSubmitted) && (
           <button onClick={() => handleExamSubmit(type)} className="next-button mt-4">
             إرسال الإجابات
           </button>
         )}
 
-        {/* Result (appears after submission) */}
         {(type === "pre" ? preExamSubmitted : postExamSubmitted) && (
           <p className="mt-2">
             نتيجتك:{" "}
@@ -151,41 +166,25 @@ export default function StrategyPage() {
           </p>
         )}
 
-        {/* Next step after pre-exam */}
         {preExamSubmitted && type === "pre" && (
           <button onClick={() => setCurrentUnit(0)} className="next-button mt-4">
             ابدأ الاستراتيجية
           </button>
         )}
 
-        {/* Next step after post-exam */}
         {postExamSubmitted && type === "post" && (
           <>
             <button onClick={() => setCurrentUnit(0)} className="next-button mt-4">
               عرض الوحدات
             </button>
-
             {Number(id) < 3 && (
-              <button
-                onClick={() => navigate(`/strategy/${Number(id) + 1}`)}
-                className="next-button mt-4"
-              >
+              <button onClick={() => navigate(`/strategy/${Number(id) + 1}`)} className="next-button mt-4">
                 الانتقال إلى الاستراتيجية التالية
               </button>
             )}
-
             {Number(id) === 3 && (
-              <p
-                className="completion-message"
-                style={{
-                  marginTop: "20px",
-                  fontWeight: "bold",
-                  color: "#0a7",
-                  fontSize: "28px",
-                  textAlign: "center",
-                }}
-              >
-                🎉 لقد أنهيت جميع الاستراتيجيات بنجاح! شكرًا لمشاركتك وتفاعلك.
+              <p className="completion-message" style={{ marginTop: "20px", color: "#0a7", fontWeight: "bold" }}>
+                🎉 لقد أنهيت جميع الاستراتيجيات بنجاح! شكرًا لمشاركتك.
               </p>
             )}
           </>
@@ -238,7 +237,6 @@ export default function StrategyPage() {
 
       {unit ? (
         <div className="media-section">
-          {/* Videos */}
           {unit.videos?.length ? (
             <div>
               <h4>الفيديوهات:</h4>
@@ -255,45 +253,30 @@ export default function StrategyPage() {
             <p>لا توجد فيديوهات في هذه الوحدة.</p>
           )}
 
-          {/* PDFs */}
           {unit.pdfs?.length ? (
             <div>
               <h4>الملفات التعليمية:</h4>
               {unit.pdfs.map((p, idx) => (
-                <iframe
-                  key={idx}
-                  src={p.replace("/view?usp=sharing", "/preview")}
-                  title={`pdf-${idx}`}
-                ></iframe>
+                <iframe key={idx} src={p.replace("/view?usp=sharing", "/preview")} title={`pdf-${idx}`}></iframe>
               ))}
             </div>
           ) : (
             <p>لا توجد ملفات تعليمية في هذه الوحدة.</p>
           )}
 
-          {/* Texts */}
           {unit.txts?.length ? (
             <div className="text-files-section">
               <h4>الملفات النصية:</h4>
               <div className="text-links">
                 {unit.txts.map((t, idx) => (
-                  <a
-                    key={idx}
-                    href={t}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-link"
-                  >
+                  <a key={idx} href={t} target="_blank" rel="noopener noreferrer" className="text-link">
                     عرض الملف {toArabic(idx + 1)}
                   </a>
                 ))}
               </div>
 
               <div className="forum-button-section">
-                <Link
-                  to={`/forum?strategy=${id}&unit=${unit?.id ?? currentUnit}`}
-                  className="forum-link-button"
-                >
+                <Link to={`/forum?strategy=${id}&unit=${unit?.id ?? currentUnit}`} className="forum-link-button">
                   منتدى النقاش
                 </Link>
               </div>
@@ -306,27 +289,35 @@ export default function StrategyPage() {
         <p>الوحدة غير متوفرة أو لم يتم تحميلها بعد.</p>
       )}
 
-      <button
-        onClick={handleNext}
-        disabled={currentUnit >= totalUnits}
-        className="next-button"
-      >
-        الانتقال إلى الوحدة التالية
-      </button>
-
-      {isThirdStrategyFinished && (
-        <div
-          className="feedback-section"
-          style={{ marginTop: "20px", textAlign: "center" }}
+      <div className="bottom-buttons">
+        <button
+          onClick={() => {
+            if (currentUnit === totalUnits - 1) {
+              setCurrentUnit(totalUnits);
+            } else {
+              handleNext();
+            }
+          }}
+          disabled={currentUnit > totalUnits}
+          className="next-button"
         >
-          <button
-            className="strategy-btn"
-            onClick={() => (window.location.href = "/feedback")}
-          >
-            تقييم المنصة وإرسال الملاحظات
+          {currentUnit === totalUnits - 1 ? "الانتقال إلى الاختبار البعدي" : "الانتقال إلى الوحدة التالية"}
+        </button>
+
+        {currentUnit === totalUnits - 1 && (
+          <button className="more-button" onClick={() => window.open(`/articles/${id}`, "_blank")}>
+            اقرأ المزيد من المقالات العلمية حول هذه الاستراتيجية
           </button>
-        </div>
-      )}
+        )}
+
+        {id === "3" && currentUnit === totalUnits - 1 && (
+          <div className="feedback-section" style={{ marginTop: "20px", textAlign: "center" }}>
+            <button className="strategy-btn" onClick={() => (window.location.href = "/feedback")}>
+              تقييم المنصة وإرسال الملاحظات
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

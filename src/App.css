@@ -17,37 +17,40 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px 30px;
-   flex-direction: row-reverse;
+  position: relative;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .navbar button {
   background: none;
   border: none;
+ 
+ }
+
+.navbar img {
+  width: 60px;
+  height: 60px;
+  }
+
+
+ #back {
+  position: absolute;
+  left: 30px;   /* adjust manually */
+  top:  0px;    /* adjust manually */
+  background: none;
+  border: none;
   cursor: pointer;
 }
 
-.navbar img {
-  width: 150px;
-  height: 150px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  transition: 0.3s ease;
-}
-
-.navbar img:hover {
-  opacity: 0.8;
-}
-
+/* Center logo */
 .navbar img[alt="Logo"] {
-  height: 130px;
-  padding-top: 10px;
+  height: 100px;
   width: auto;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
-
+ 
 /* ---------------- FOOTER ---------------- */
 .footer {
   background-color: #f8fafc;
@@ -384,10 +387,10 @@ button,
 
 /* Circles row */
 .units-row {
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  margin: 25px 0;
+   display: flex !important;
+  justify-content: center !important;
+  gap: 5px !important; /* reduce spacing (was 18px or 30px) */
+  margin: 5px 0 !important;
 }
 
 /* Circles */
@@ -593,6 +596,26 @@ button,
   transition: background-color 0.3s ease, transform 0.2s ease;
   font-family: "Tajawal", sans-serif;
 }
+.more-button{
+  display: block;
+  margin: 30px auto 60px;
+ 
+  color: #ffffff;
+  border-radius: 5pc;
+  border-color: rgb(199, 199, 62);
+  padding: 12px 40px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-family: "Tajawal", sans-serif;
+}
+.more-button:hover{
+  background-color: #f6b800;
+  color: #0a376d;
+  transform: scale(1.05);
+}
 
 .next-button:hover {
   background-color: #f6b800;
@@ -677,6 +700,7 @@ button,
 .answer-form button:hover {
   background-color: #f6b800;
   color: #0a376d;
+  transform: scale(1.05);
 }
 
 
@@ -699,6 +723,7 @@ button,
 .forum-link-button:hover {
   background-color: #f6b800;
   color: #0a376d;
+  transform: scale(1.05);
 }
 
 
@@ -815,7 +840,9 @@ button,
 
 .feedback-form button:hover,
 .next-button:hover {
-  background-color: #0066d3;
+  background-color: #f6b800;
+  color: #0a376d;
+  transform: scale(1.05);
 }
 
 /* ---------- Success Message ---------- */
@@ -830,5 +857,72 @@ button,
 
 .strategy-description {
   white-space: pre-line;
+}
+
+.strategy-btn,
+.more-button,
+.next-button {
+  display: inline-block;
+  padding: 12px 25px;
+  font-size: 17px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 8px auto;
+}
+
+/* Blue main button */
+.next-button {
+  background-color: #0056b3;
+  color: #fff;
+}
+.next-button:hover {
+  background-color: #004494;
+}
+
+/* Yellow button (read more) */
+.more-button {
+  background-color: #f6c90e;
+  color: #003366;
+}
+.more-button:hover {
+  background-color: #ffd43b;
+}
+
+/* Orange button (feedback) */
+.strategy-btn {
+  background-color: #ffc107;
+  color: #003366;
+}
+.strategy-btn:hover {
+  background-color: #ffca2c;
+}
+/* --- Global button centering fix --- */
+button,
+.strategy-btn,
+.next-button,
+.more-button {
+  display: block;
+  margin: 15px auto; /* centers them horizontally */
+  text-align: center;
+}
+
+/* Keep bottom button section tidy on StrategyPage */
+.bottom-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.bottom-buttons {
+  display: flex;
+  flex-direction: column; /* stack vertically */
+  align-items: center;    /* center horizontally */
+  gap: 14px;              /* spacing between buttons */
+  margin-top: 30px;
 }
 
