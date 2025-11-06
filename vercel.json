@@ -1,16 +1,8 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "redirects": [
-    { "source": "/login", "destination": "/#/login" },
-    { "source": "/signup", "destination": "/#/signup" },
-    { "source": "/strategies", "destination": "/#/strategies" },
-    { "source": "/forum", "destination": "/#/forum" },
-    { "source": "/feedback", "destination": "/#/feedback" },
-    { "source": "/strategy/:id", "destination": "/#/strategy/:id" },
-    { "source": "/articles/:strategyId", "destination": "/#/articles/:strategyId" }
+  "builds": [
+    { "src": "dist/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "dist/index.html" }
   ]
 }
