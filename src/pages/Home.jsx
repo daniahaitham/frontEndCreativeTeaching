@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [showLoginMsg, setShowLoginMsg] = useState(false);
+            const navigate = useNavigate();
 
   const handleMove = () => {
     const user = localStorage.getItem("user");
@@ -72,6 +73,8 @@ export default function Home() {
             <p style={{ color: "red", fontWeight: "bold" }}>
               يجب تسجيل الدخول أولاً للوصول إلى الاستراتيجيات
             </p>
+
+
             <button
   onClick={() => navigate("/login")}
   style={{
