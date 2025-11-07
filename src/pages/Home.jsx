@@ -1,6 +1,7 @@
 import "../App.css";
 import teacherImage from "../assets/teacher.png";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [showLoginMsg, setShowLoginMsg] = useState(false);
@@ -72,19 +73,18 @@ export default function Home() {
               يجب تسجيل الدخول أولاً للوصول إلى الاستراتيجيات
             </p>
             <button
-              // ✅ fixed for HashRouter
-              onClick={() => (window.location.href = "/#/login")}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "#004aad",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              تسجيل الدخول الآن
-            </button>
+  onClick={() => navigate("/login")}
+  style={{
+    padding: "8px 16px",
+    backgroundColor: "#004aad",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer"
+  }}
+>
+  تسجيل الدخول الآن
+</button> 
           </div>
         )}
       </div>
