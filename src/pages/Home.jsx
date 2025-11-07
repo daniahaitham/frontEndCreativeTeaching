@@ -73,7 +73,7 @@ export default function Home() {
             </p>
             <button
               // ✅ fixed for HashRouter
-              onClick={() => (window.location.href = "#/login")}
+              onClick={() => (window.location.href = "/#/login")}
               style={{
                 padding: "8px 16px",
                 backgroundColor: "#004aad",
